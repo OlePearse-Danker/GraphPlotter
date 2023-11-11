@@ -4,10 +4,15 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.MouseWheelEvent;
+import javax.swing.JButton;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 @SuppressWarnings("serial")
-public class GraphPlotter extends JPanel implements MouseWheelListener {
+public class GraphPlotter extends JPanel{
     private Graphics g;
+    private JButton zoomInButton;
+    private JButton zoomOutButton;
 
     private int screenMaxX;
     private int screenMaxY;
@@ -32,8 +37,9 @@ public class GraphPlotter extends JPanel implements MouseWheelListener {
         xUnit = xRange / screenMaxX;
         yUnit = yRange / screenMaxY;
 
-        // Add the mouse wheel listener to enable zooming
-        this.addMouseWheelListener(this);
+        createZoomInButton();
+        createZoomOutButton();
+
     }
 
     @Override
@@ -54,7 +60,7 @@ public class GraphPlotter extends JPanel implements MouseWheelListener {
         g.drawLine(0, scrrenMidY(), screenMaxX, scrrenMidY());
         g.drawLine(scrrenMidX(), 0, scrrenMidX(), screenMaxY);
 
-        // Add labels for x-axis
+/*        // Add labels for x-axis
         for (int xScreen = 0; xScreen < screenMaxX; xScreen += 50) {
             double xValue = xMin + (xScreen * xUnit);
             g.drawString(String.format("%.2f", xValue), xScreen, scrrenMidY() + 15);
@@ -64,7 +70,7 @@ public class GraphPlotter extends JPanel implements MouseWheelListener {
         for (int yScreen = 0; yScreen < screenMaxY; yScreen += 50) {
             double yValue = yMax - ((double) yScreen / screenMaxY) * yRange;
             g.drawString(String.format("%.2f", yValue), scrrenMidX() + 5, yScreen + 15);
-        }
+        }*/
     }
 
     private void plot() {
@@ -75,42 +81,55 @@ public class GraphPlotter extends JPanel implements MouseWheelListener {
             drawPoint(new Point(xScreen, yScreen), Color.BLUE);
         }
     }
+    private void createZoomInButton() {
+        zoomInButton = new JButton("Zoom In");
+        zoomInButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Call the zoom-in method here
+                zoomIn(); // Call the zoom-in method
+            }
+        });
+        add(zoomInButton);
+    }
 
-    @Override
-    public void mouseWheelMoved(MouseWheelEvent e) {
-        int notches = e.getWheelRotation();
-        if (notches < 0) {
-            // Zoom in
-            zoomIn();
-        } else {
-            // Zoom out
-            zoomOut();
-        }
+    private void createZoomOutButton() {
+        zoomOutButton = new JButton("Zoom Out");
+        zoomOutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Call the zoom-out method here
+                zoomOut(); // Call the zoom-out method
+            }
+        });
+        add(zoomOutButton);
     }
 
     private void zoomIn() {
-        // Adjust the x-axis and y-axis ranges to zoom in
-        xRange /= 2;
-        yRange /= 2;
+        // Decrease the x-axis and y-axis ranges for zooming in
+        double zoomFactor = 2.0;
+        xRange /= zoomFactor;
+        yRange /= zoomFactor;
 
-        // Adjust the x-unit and y-range values accordingly
+        // Recalculate the xUnit and yUnit values based on the updated ranges
         xUnit = xRange / screenMaxX;
         yUnit = yRange / screenMaxY;
 
-        // Repaint the panel
+        // Repaint the panel to reflect the new zoom level
         repaint();
     }
 
     private void zoomOut() {
-        // Adjust the x-axis and y-axis ranges to zoom out
-        xRange *= 2;
-        yRange *= 2;
+        // Increase the x-axis and y-axis ranges for zooming out
+        double zoomFactor = 2.0;
+        xRange *= zoomFactor;
+        yRange *= zoomFactor;
 
-        // Adjust the x-unit and y-range values accordingly
+        // Recalculate the xUnit and yUnit values based on the updated ranges
         xUnit = xRange / screenMaxX;
         yUnit = yRange / screenMaxY;
 
-        // Repaint the panel
+        // Repaint the panel to reflect the new zoom level
         repaint();
     }
 
