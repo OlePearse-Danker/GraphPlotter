@@ -2,8 +2,6 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.event.MouseWheelListener;
-import java.awt.event.MouseWheelEvent;
 import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,6 +45,15 @@ public class GraphPlotter extends JPanel{
         super.paintComponent(g);
         this.g = g;
 
+        int screenWidth = getWidth();
+        int screenHeight = getHeight();
+
+        screenMaxX = screenWidth;
+        screenMaxY = screenHeight;
+
+        xUnit = xRange / screenMaxX;
+        yUnit = yRange / screenMaxY;
+
         coordinateSystem();
         plot();
     }
@@ -57,21 +64,54 @@ public class GraphPlotter extends JPanel{
     }
 
     private void coordinateSystem() {
-        g.drawLine(0, scrrenMidY(), screenMaxX, scrrenMidY());
-        g.drawLine(scrrenMidX(), 0, scrrenMidX(), screenMaxY);
+        int screenWidth = getWidth();
+        int screenHeight = getHeight();
 
-/*        // Add labels for x-axis
-        for (int xScreen = 0; xScreen < screenMaxX; xScreen += 50) {
+        g.clearRect(0, 0, screenWidth, screenHeight); // Clear the screen
+
+        int gridSize = 50; // Adjust this value to change the grid spacing
+
+        // Draw the grid lines
+        g.setColor(Color.LIGHT_GRAY);
+        for (int xScreen = 0; xScreen <= screenWidth; xScreen += gridSize) {
+            g.drawLine(xScreen, 0, xScreen, screenHeight);
+        }
+        for (int yScreen = 0; yScreen <= screenHeight; yScreen += gridSize) {
+            g.drawLine(0, yScreen, screenWidth, yScreen);
+        }
+
+        // Draw the x-axis
+        g.setColor(Color.BLACK);
+        g.drawLine(0, screenHeight / 2, screenWidth, screenHeight / 2);
+
+        // Draw the y-axis
+        g.drawLine(screenWidth / 2, 0, screenWidth / 2, screenHeight);
+
+        // Add labels for x-axis
+        for (int xScreen = 0; xScreen < screenWidth; xScreen += gridSize) {
             double xValue = xMin + (xScreen * xUnit);
-            g.drawString(String.format("%.2f", xValue), xScreen, scrrenMidY() + 15);
+            g.drawString(String.format("%.2f", xValue), xScreen, screenHeight / 2 + 15);
         }
 
         // Add labels for y-axis
-        for (int yScreen = 0; yScreen < screenMaxY; yScreen += 50) {
-            double yValue = yMax - ((double) yScreen / screenMaxY) * yRange;
-            g.drawString(String.format("%.2f", yValue), scrrenMidX() + 5, yScreen + 15);
-        }*/
+        for (int yScreen = 0; yScreen < screenHeight; yScreen += gridSize) {
+            double yValue = yMax - ((double) yScreen / screenHeight) * yRange;
+            g.drawString(String.format("%.2f", yValue), screenWidth / 2 + 5, yScreen + 15);
+        }
+
+        // Draw y = 0 line
+        g.setColor(Color.RED);
+        int yScreenZero = screenHeight / 2;
+        g.drawLine(0, yScreenZero, screenWidth, yScreenZero);
+
+        // Draw x = 0 line
+        g.drawLine(screenWidth / 2, 0, screenWidth / 2, screenHeight);
     }
+
+
+
+
+
 
     private void plot() {
         double x = xMin;
@@ -80,6 +120,12 @@ public class GraphPlotter extends JPanel{
             int yScreen = scrrenMidY() - ((int) ((f(x) / yRange) * screenMaxY));
             drawPoint(new Point(xScreen, yScreen), Color.BLUE);
         }
+
+        // Zeichne die Linie für y = 0
+//        g.setColor(Color.RED);
+//        int yScreenZero = scrrenMidY() - ((int) ((f(0.0) / yRange) * screenMaxY));
+//        g.drawLine(0, yScreenZero, screenMaxX, yScreenZero);
+
     }
     private void createZoomInButton() {
         zoomInButton = new JButton("Zoom In");
