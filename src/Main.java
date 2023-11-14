@@ -1,19 +1,30 @@
+
+
 import javax.swing.JFrame;
-import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 
-public class Main {
+@SuppressWarnings("serial")
+public class Main extends JFrame {
+    private GraphPlotter graph;
+    private Dimension screenSize;
+
+    public Main(String title) {
+        super(title);
+
+        screenSize = getToolkit().getScreenSize();
+        setBounds(0, 0, screenSize.width, screenSize.height);
+
+        graph = new GraphPlotter(screenSize.width, screenSize.height);
+        setLayout(new GridLayout(1, 1, 20, 20));
+        add(graph);
+
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
     public static void main(String[] args) {
-        int screenMaxX = 800; // Set your preferred screen width here
-        int screenMaxY = 600; // Set your preferred screen height here
-
-        GraphPlotter graphPlotter = new GraphPlotter(screenMaxX, screenMaxY);
-
-        JFrame frame = new JFrame("Graph Plotter");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(screenMaxX, screenMaxY);
-        frame.getContentPane().setBackground(Color.WHITE);
-        frame.add(graphPlotter);
-        frame.setVisible(true);
+        new Main("Function plotter");
     }
 }
 
